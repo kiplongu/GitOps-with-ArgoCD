@@ -87,3 +87,141 @@ Replace the contents of gitops-argocd/sealed-secret/secret.yaml definition file 
 curl -Lo argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v1.12.0/argocd-vault-plugin_1.12.0_linux_amd64
 chmod +x argocd-vault-plugin
 mv argocd-vault-plugin /usr/local/bin
+
+
+There is a Kubernetes secret definition file /root/secret.yaml. The file has placeholders for apikey:, username: and password:. We already have secrets added in the Vault server that contain the original values for these placeholders.
+
+
+# Use argocd-vault-plugin and generate a secret manifest/definition file called /root/secret_updated.yaml with all the placeholders replaced with the actual values from the Vault server. Find below some useful details:
+
+
+   Vault Env File: /root/vault.env
+
+   Placeholder Secret Definition File: /root/secret.yaml
+
+   Final Secret Definition File: /root/secret_updated.yaml
+
+   # solution
+
+   argocd-vault-plugin generate -c /root/vault.env - < /root/secret.yaml > /root/secret_updated.yaml
+
+
+
+   Edit the argocd-repo-server deployment to add an init container to make argocd-vault-plugin utility available within this pod. To do this, use the following steps.
+
+
+
+Add the Initcontainer below:
+
+
+      - name: download-tools
+        image: alpine:3.8
+        command: [sh, -c]
+        env:
+          - name: AVP_VERSION
+            value: "1.7.0"
+        args:
+          - >-
+            wget -O argocd-vault-plugin
+            https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
+            chmod +x argocd-vault-plugin &&
+            mv argocd-vault-plugin /custom-tools/
+        volumeMounts:
+          - mountPath: /custom-tools
+            name: custom-tools
+
+
+
+Add a Volume:
+
+- name: custom-tools
+   emptyDir: {}
+
+
+
+Mount this volume under argocd-repo-server container:
+
+- name: custom-tools
+  mountPath: /usr/local/bin/argocd-vault-plugin
+  subPath: argocd-vault-plugin
+
+
+
+Edit argocd-cm Configmap to add below data section:
+
+  configManagementPlugins: |-
+    - name: argocd-vault-plugin
+      generate:
+        command: ["argocd-vault-plugin"]
+        args: ["generate", "./"]
+
+
+
+You can take further help from here.
+
+# solution
+
+Edit argocd-repo-server deployment:
+
+
+kubectl edit deployments.apps -n argocd argocd-repo-server
+
+
+
+Under initContainers: add a new init container as below:
+
+
+      - name: download-tools
+        image: alpine:3.8
+        command: [sh, -c]
+        env:
+          - name: AVP_VERSION
+            value: "1.7.0"
+        args:
+          - >-
+            wget -O argocd-vault-plugin
+            https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v${AVP_VERSION}/argocd-vault-plugin_${AVP_VERSION}_linux_amd64 &&
+            chmod +x argocd-vault-plugin &&
+            mv argocd-vault-plugin /custom-tools/
+        volumeMounts:
+          - mountPath: /custom-tools
+            name: custom-tools
+
+
+
+Under volumes: add a Volume as below:
+
+
+- name: custom-tools
+   emptyDir: {}
+
+
+
+For argocd-repo-server container add a VolumeMount as below:
+
+
+- name: custom-tools
+  mountPath: /usr/local/bin/argocd-vault-plugin
+  subPath: argocd-vault-plugin
+
+
+
+Finally save the changes
+
+
+Now edit argocd-cm Configmap:
+
+
+kubectl edit -n argocd cm argocd-cm
+
+
+
+At the end of the file add a data section, take care of the indentation to make sure it is aligned with the metadata: section:
+
+
+data:
+  configManagementPlugins: |-
+    - name: argocd-vault-plugin
+      generate:
+        command: ["argocd-vault-plugin"]
+        args: ["generate", "./"]
