@@ -49,5 +49,13 @@ sudo install -m 755 kubeseal /usr/local/bin/kubeseal
 kubectl -n kube-system get secret sealed-secrets-keyfxtkf -o json | jq -r .data'."tls.crt"' | base64 -d > /root/sealedSecret-publicCert.crt
 
 
+# Create /root/mysql-password_k8s-secret.yaml specification file for a generic Kubernetes secret called app-crds and add the secret data below to it.
 
 
+   username: admin-dev-group
+
+   password: paSsw0rD-1erT-diS
+
+   apikey: zaCELgL-0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx
+
+kubectl create secret generic app-crds --from-literal=apikey=zaCELgL-0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx --from-literal=username=admin-dev-group --from-literal=password=paSsw0rD-1erT-diS -o yaml --dry-run=client > mysql-password_k8s-secret.yaml
