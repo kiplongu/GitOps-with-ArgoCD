@@ -34,3 +34,10 @@ You can access the ArgoCD UI and ArgoCD CLI by using the following credentials.
     User: admin
 
     Password: admin123
+
+
+# Install kubeseal CLI version 0.18.0. For help installing KubeSeal, click on the KubeSeal button at the top of the workspace.
+
+wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.18.0/kubeseal-0.18.0-linux-amd64.tar.gz
+tar -xvzf kubeseal-0.18.0-linux-amd64.tar.gz kubeseal
+sudo install -m 755 kubeseal /usr/local/bin/kubeseal
