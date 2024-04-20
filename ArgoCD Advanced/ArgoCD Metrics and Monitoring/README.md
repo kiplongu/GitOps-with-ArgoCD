@@ -166,3 +166,50 @@ To do the same, edit prometheusrules called kode-kloud-prometheus-stac-alertmana
       annotations:
          summary: "'{{ $labels.name }}' Application has
                     synchronization issue"
+
+
+
+# Create an ArgoCD application using either UI or CLI.
+
+
+   Application Name: alert-manager-demo
+
+   Project Name: default
+
+   Sync Policy: manual
+
+   Sync Options: AUTO-CREATE NAMESPACE
+
+   Repository URL: <Gitea URL>/bob/gitops-argocd.git
+
+   Repo Type: Git
+
+   Path: ./solar-system
+
+   Cluster URL: https://kubernetes.default.svc
+
+   Namespace: alert-demo
+
+
+
+Access the Gitea server with below credentials
+
+    username: bob
+
+    password: bob@123
+
+
+Access the ArgoCD UI and CLI with below credentials.
+
+    User: admin
+
+    Password: admin123
+
+
+
+
+Created 'alert-manager-demo' Argocd application?
+
+![alt text](image-6.png)
+
+![alt text](image-5.png)
