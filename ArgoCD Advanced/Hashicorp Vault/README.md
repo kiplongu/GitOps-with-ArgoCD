@@ -57,5 +57,23 @@ kubectl -n kube-system get secret sealed-secrets-keyfxtkf -o json | jq -r .data'
    password: paSsw0rD-1erT-diS
 
    apikey: zaCELgL-0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx
-
+# solution
 kubectl create secret generic app-crds --from-literal=apikey=zaCELgL-0imfnc8mVLWwsAawjYr4Rx-Af50DDqtlx --from-literal=username=admin-dev-group --from-literal=password=paSsw0rD-1erT-diS -o yaml --dry-run=client > mysql-password_k8s-secret.yaml
+
+
+
+# Use kubeseal CLI to create a sealed secret from the previously created definition file i.e mysql-password_k8s-secret.yaml. The sealed secrets should be stored in mysql-password_sealed-secret.yaml file.
+
+
+Further find below more details:
+
+
+   Scope: cluster-wide
+
+   Format: yaml
+
+   Certificate: /root/sealedSecret-publicCert.crt
+
+   # solution
+
+   kubeseal -o yaml --scope cluster-wide --cert sealedSecret-publicCert.crt < mysql-password_k8s-secret.yaml > mysql-password_sealed-secret.yaml
