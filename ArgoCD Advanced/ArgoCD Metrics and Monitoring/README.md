@@ -147,3 +147,22 @@ Click on the Grafana button to access the Grafana UI, and log in using the crede
    Import https://grafana.com/grafana/dashboards/14584-argocd/ dashboard in Grafana with default options.
 
    ![alt text](image-4.png)
+
+
+# Configure an AlertManager Rule for ArgoCD, which will raise an alert when an Argocd application status is changed to OutOfSync.
+
+
+
+To do the same, edit prometheusrules called kode-kloud-prometheus-stac-alertmanager.rules under monitoring namespace, by adding the YAML snippet below:
+
+
+- name: ArgoCD Rules
+  rules:
+    - alert: ArgoApplicationOutOfSync
+      expr: argocd_app_info{sync_status="OutOfSync"} == 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+         summary: "'{{ $labels.name }}' Application has
+                    synchronization issue"
