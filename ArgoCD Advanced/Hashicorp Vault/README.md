@@ -41,3 +41,13 @@ You can access the ArgoCD UI and ArgoCD CLI by using the following credentials.
 wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.18.0/kubeseal-0.18.0-linux-amd64.tar.gz
 tar -xvzf kubeseal-0.18.0-linux-amd64.tar.gz kubeseal
 sudo install -m 755 kubeseal /usr/local/bin/kubeseal
+
+
+# Extract the sealed-secrets controller TLS certificate from the kube-system namespace and store it in a file named /root/sealedSecret-publicCert.crt.
+
+
+kubectl -n kube-system get secret sealed-secrets-keyfxtkf -o json | jq -r .data'."tls.crt"' | base64 -d > /root/sealedSecret-publicCert.crt
+
+
+
+
