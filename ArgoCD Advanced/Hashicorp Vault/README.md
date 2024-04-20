@@ -77,3 +77,13 @@ Further find below more details:
    # solution
 
    kubeseal -o yaml --scope cluster-wide --cert sealedSecret-publicCert.crt < mysql-password_k8s-secret.yaml > mysql-password_sealed-secret.yaml
+
+Replace the contents of gitops-argocd/sealed-secret/secret.yaml definition file in gitops-argocd repository with the contents of mysql-password_sealed-secret.yaml file that you just created in the previous question. You can either directly update this file on Gitea, or clone and add/push your changes from the command line.
+
+
+
+# Install argocd-vault-plugin version 1.12.0. For help, click the ArgocdVaultPlugin button at the top of the workspace.
+
+curl -Lo argocd-vault-plugin https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v1.12.0/argocd-vault-plugin_1.12.0_linux_amd64
+chmod +x argocd-vault-plugin
+mv argocd-vault-plugin /usr/local/bin
